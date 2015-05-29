@@ -87,19 +87,28 @@ SynthDef(\crackle, {arg bitRate=100, clickFreq=10, clickVar=0,
 }).add;
 
 
-// Synths for the Markov tone-cluster piece at the end
+// Synths for the Markovian tone-cluster piece at the end
 
-// Synth def
-SynthDef(\playBuf, {
-	arg out=0, bufnum=0, rate=1, wobbleDepth=0, wobbleRate=1,
-	ampModRate=50, ampModDepth=0;
+SynthDef(\clusterTone, {
+	arg out=0, freq=440, pitchMod=0,
+	ampModRate=10, ampModDepth=0.9, formStrength=0.7;
 
-	var scaledRate, player, env;
-	scaledRate = rate *  BufRateScale.kr(bufnum);
-	scaledRate = scaledRate * LFNoise0.kr(wobbleRate, wobbleDepth, 1);
-	player = PlayBuf.ar(1, bufnum, scaledRate, doneAction:2);
-	player = player * LFNoise0.ar(ampModRate).range(1-ampModDepth, 1);
-	Out.ar(out, Pan2.ar(player, LFNoise1.kr(0.1)))
+	var env, sig, form;
+	formStrength = formStrength.clip(0, 1);
+	env = EnvGen.kr(Env.perc(0.005, LFNoise1.kr(0.01, 1, 3)), doneAction:2);
+	freq = LFNoise1.kr(0.025, freq * pitchMod, freq);
+	sig = SinOsc.ar(freq);
+	form = (6..1).collect({arg nForm;
+		Formant.ar(freq,
+			formfreq: nForm*freq + LFNoise0.kr(0.1, 200),
+			bwfreq: freq*2,
+			mul:LFNoise1.kr(0.5, mul:(formStrength ** 4) / 50 * (nForm ** 2))
+		)
+	});
+	sig = Mix.new(form) + sig;
+	sig = sig * LFNoise0.ar(ampModRate).range(1-ampModDepth, 1);
+	sig = sig * 0.7;
+	Out.ar(out, Pan2.ar(sig * env, LFNoise1.kr(0.1)));
 }).add;
 
 SynthDef(\mc3verb, {arg in, out, mix=0, room=0, damp=0;

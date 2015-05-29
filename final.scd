@@ -6,13 +6,14 @@
 ~touchIP = "10.150.97.142";
 ~finchPresets = ["blank.yaml", "oboe_c.yaml", "b-flat.yaml", "blips_1.yaml"];
 ~toneClusterPlayer = 0;
-~toneClusterTransp = 1.5 * [-17, -3, 0, -3];
+~toneClusterTransp = [-17, -3, 0, -3];
 )
 
 // Kyler's settings
 (
 ~touchIP = "10.150.97.142";
-~finchPresets = ["blank.yaml", "blips_2.yaml"];
+~finchPresets = ["blank.yaml", "beginning_withvolume.yaml",
+	"low_sound.yaml", "blips_2.yaml", "lastsound.yaml"];
 ~toneClusterPlayer = 1;
 ~toneClusterTransp = [-29, -6, -8, -7];
 )

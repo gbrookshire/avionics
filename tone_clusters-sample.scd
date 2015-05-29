@@ -25,41 +25,54 @@ Different chains on each ipad
 //
 // Dictionary of instruments.
 //    Each of those holds a dictionary of samples
-var nodeVals, markovArr, playRates;
-var goFunc;
-var pitchMod, formStrength, ampModDepth, ampModRate;
+var nodeVals, voiceArr, markovArr, bufferDict, playRates;
+var makeGoFunc;
+var wobbleDepth, wobbleRate, ampModDepth, ampModRate;
 var sourceBus, fxBus, sourceGrp, fxGrp;
 var crushSynth, verbSynth;
 var transp;
 var currDir = thisProcess.nowExecutingPath.dirname;
 
+wobbleDepth = 0;
+wobbleRate = 0;
+
+
 // Function to make a go function for a markov chain
 // takes a name of a voice.
-goFunc = {|freq|
-	Synth(\clusterTone,
-		[
-			freq: freq.midicps,
-			formStrength: formStrength,
-			pitchMod: pitchMod,
-			ampModDepth: ampModDepth,
-			ampModRate: ampModRate,
-			out: sourceBus
-		],
-		sourceGrp
-	);
+makeGoFunc = {|voice, playbackRate|
+	{|note|
+		Synth(\playBuf,
+			[
+				bufnum: bufferDict[voice][note].bufnum,
+				rate: playbackRate,
+				wobbleDepth: wobbleDepth,
+				wobbleRate: wobbleRate,
+				ampModDepth: ampModDepth,
+				ampModRate: ampModRate,
+				out: sourceBus
+			],
+			sourceGrp
+		);
+		(voice + note).postln;
+	};
 };
 
 nodeVals = (0..12); // Chromatic tones
+voiceArr = ["crotale", "crotale", "crotale", "crotale"];
+
+transp = {|x| (2 ** (x / 12))};
+playRates = ~toneClusterTransp.collect({|x| 1/2 * transp.(x)});
 
 // Make the Markov models
 // Load transition matrices
 // Make OSC responders for each model
-markovArr = 4.collect({arg ind;
+markovArr = voiceArr.collect({arg voice, ind;
 	var mrkv, oscAddr, pth, nMat;
-	oscAddr = '/4/push' ++ (ind + 1);
 	pth = currDir ++ "/tone_clusters/";
+	oscAddr = '/4/push' ++ (ind + 1);
 	nMat = (~toneClusterPlayer * 4) + ind + 1;
-	mrkv = MarkovSeq(goFunc, 72 + nodeVals + ~toneClusterTransp[ind]);
+	nMat.postln;
+	mrkv = MarkovSeq(makeGoFunc.(voice, playRates[ind]), nodeVals);
 	mrkv.loadTransMat(pth ++ "tm" ++ nMat ++ ".csv");
 	OSCdef.new('markov3_step' ++ ind ++ '_resp',
 		{|msg, time, addr, port|
@@ -77,14 +90,14 @@ markovArr = 4.collect({arg ind;
 OSCdef.new(
 	\markov3_wobble_depth_resp,
 	{|msg, time, addr, port|
-		formStrength = msg[1];
+		wobbleDepth = (msg[1] * 0.1) + 0.0005;
 	},
 	'/4/fader1'
 );
 OSCdef.new(
 	\markov3_wobble_rate_resp,
 	{|msg, time, addr, port|
-		pitchMod = msg[1] * (1 - (2 ** ((0.5)/12)));
+		wobbleRate = ((msg[1] + 0.05) ** 2) * 200;
 	},
 	'/4/fader2'
 );
@@ -102,6 +115,19 @@ OSCdef.new(
 	},
 	'/4/fader4'
 );
+
+
+// Load the samples into a buffer
+// Dict of dicts -- dict for each voice, holds notes
+// Notes indexed by 0
+bufferDict = Dictionary.new;
+voiceArr.do({arg voice, voiceInd;
+	var fileStem = currDir++'/samples/'++voice++'/';
+	bufferDict.put(
+		voice,
+		Array.fill(13, {|i| Buffer.read(s, fileStem++i++'.wav')})
+	);
+});
 
 
 // Create the effect groups
