@@ -134,7 +134,7 @@ OSCdef.new(
 OSCdef.new(
 	\markov2_timing_resp,
 	{|msg, time, addr, port|
-		var tempo = 0.1 + (4 * ((1 - msg[1]) ** 1.5));
+		var tempo = 0.1 + (8 * ((1 - msg[1]) ** 1.5));
 		mrkv1.timing_func = ~devTimeFunc.(2.0 * ~devScaler, tempo, 3);
 		mrkv2.timing_func = ~devTimeFunc.(2.0 * ~devScaler, tempo, 4);
 		mrkv3.timing_func = ~devTimeFunc.(2.0 * ~devScaler, tempo, 4);

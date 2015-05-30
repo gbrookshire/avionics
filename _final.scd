@@ -3,10 +3,11 @@
 
 // Geoff's settings
 (
-~touchIP = "192.168.1.139";
+~touchIP = "192.168.1.5";
 ~finchPresets = ["blank.yaml", "oboe_c.yaml", "b-flat.yaml", "blips_1.yaml"];
 ~toneClusterPlayer = 0;
 ~toneClusterTransp = [-17, -3, 0, -3];
+~toneDecay = 5;
 )
 
 // Kyler's settings
@@ -16,6 +17,7 @@
 	"low_sound.yaml", "blips_2.yaml", "lastsound.yaml"];
 ~toneClusterPlayer = 1;
 ~toneClusterTransp = [-29, -6, -8, -7];
+~toneDecay = 3;
 )
 
 // Boot up the server and load synth defs

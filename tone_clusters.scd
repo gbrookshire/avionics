@@ -44,6 +44,7 @@ goFunc = {|freq|
 	Synth(\clusterTone,
 		[
 			freq: freq.midicps,
+			decay: ~toneDecay,
 			formStrength: formStrength,
 			pitchMod: pitchMod,
 			ampModDepth: ampModDepth,
@@ -118,6 +119,6 @@ fxGrp = Group.after(sourceGrp);
 
 verbSynth = Synth.new(
 	\mc3verb,
-	[in:sourceBus, out:0, mix:0.2, room:0.3],
+	[in:sourceBus, out:0, mix:0.5, room:0.9],
 	fxGrp);
 

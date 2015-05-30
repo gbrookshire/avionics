@@ -89,12 +89,14 @@ SynthDef(\crackle, {arg bitRate=100, clickFreq=10, clickVar=0,
 // Synths for the Markovian tone-cluster piece at the end
 
 SynthDef(\clusterTone, {
-	arg out=0, freq=440, pitchMod=0,
+	arg out=0, freq=440, decay=3, pitchMod=0,
 	ampModRate=10, ampModDepth=0.9, formStrength=0.7;
 
 	var env, sig, form;
 	formStrength = formStrength.clip(0, 1);
-	env = EnvGen.kr(Env.perc(0.005, LFNoise1.kr(0.01, 1, 3)), doneAction:2);
+	env = EnvGen.kr(
+		Env.perc(0.005, LFNoise1.kr(0.01, 1, decay)),
+		doneAction:2);
 	freq = LFNoise1.kr(0.025, freq * pitchMod, freq);
 	sig = SinOsc.ar(freq);
 	form = (6..1).collect({arg nForm;
@@ -106,7 +108,7 @@ SynthDef(\clusterTone, {
 	});
 	sig = Mix.new(form) + sig;
 	sig = sig * LFNoise0.ar(ampModRate).range(1-ampModDepth, 1);
-	sig = sig * 0.5;
+	sig = sig * 0.25;
 	Out.ar(out, Pan2.ar(sig * env, LFNoise1.kr(0.1)));
 }).add;
 
