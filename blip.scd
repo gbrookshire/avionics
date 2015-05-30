@@ -18,7 +18,7 @@ goFunc1 = {arg freq;
 	Synth(\crackle,
 		[bitRate: br,
 			clickFreq: cf,
-			clickVar: 1,
+			clickVar: 0.7,
 			ringFreq: freq.midicps,
 			ringTime: rt,
 			mix: ~blipScaler.linlin(0, 1, 0, 0.9),
@@ -27,7 +27,8 @@ goFunc1 = {arg freq;
 		]
 	);
 };
-nodeVals1 = [57, 60, 67, 69, 64];
+// nodeVals1 = [57, 60, 67, 69, 64];
+nodeVals1 = [43, 46, 69, 72, 74];
 
 ~blipMarkov = MarkovSeq(goFunc1, nodeVals1);
 ~blipMarkov.loadTransMat(homeDir ++ "/blip.csv");

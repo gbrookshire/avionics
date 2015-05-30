@@ -24,12 +24,12 @@ s.options.numInputBusChannels = 2;
 s.options.numOutputBusChannels = 4;
 s.boot;
 s.meter;
+"final_synths.scd".loadRelative; // Load non-finchesizer synths
 )
 
 // Set up
 (
 "finchesizer.scd".loadRelative;
-"final_synths.scd".loadRelative; // Load non-finchesizer synths
 "blip.scd".loadRelative; // Prepare markov chain piece w/ ringing noise
 "develop.scd".loadRelative; // Markov chain 2
 "tone_clusters.scd".loadRelative;

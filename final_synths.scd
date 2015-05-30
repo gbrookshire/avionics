@@ -79,10 +79,9 @@ SynthDef(\crackle, {arg bitRate=100, clickFreq=10, clickVar=0,
 		freq:LFNoise1.kr(1, mul:ringFreq/40, add:ringFreq)*(1..8),
 		decaytime:LFNoise0.kr(1!8, ringTime/2, ringTime));
 	ring = Mix(ring);
-	ring = ring * 0.1;
-	sig = Mix([sig * (1 - mix), ring * mix]);
-	sig = sig * 0.5;
-	sig = sig.range(-0.5, 0.5);
+	ring = ring * 0.025;
+	sig = Mix([1.2 * sig * (1 - mix), ring * mix]);
+	sig = sig * 0.3;
 	Out.ar(0, Pan2.ar(sig * env, pan));
 }).add;
 
@@ -118,5 +117,5 @@ SynthDef(\mc3verb, {arg in, out, mix=0, room=0, damp=0;
 		mix: mix.lag(0.1),
 		room: room.lag(0.1),
 		damp: damp.lag(0.1));
-	ReplaceOut.ar(out, sig);
+	Out.ar(out, sig);
 }).add;
