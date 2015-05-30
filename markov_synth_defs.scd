@@ -79,7 +79,7 @@ SynthDef(\crackle, {arg bitRate=100, clickFreq=10, clickVar=0,
 		freq:LFNoise1.kr(1, mul:ringFreq/40, add:ringFreq)*(1..8),
 		decaytime:LFNoise0.kr(1!8, ringTime/2, ringTime));
 	ring = Mix(ring);
-	ring = ring * 0.025;
+	ring = ring * 0.02;
 	sig = Mix([1.2 * sig * (1 - mix), ring * mix]);
 	sig = sig * 0.3;
 	Out.ar(0, Pan2.ar(sig * env, pan));
@@ -106,7 +106,7 @@ SynthDef(\clusterTone, {
 	});
 	sig = Mix.new(form) + sig;
 	sig = sig * LFNoise0.ar(ampModRate).range(1-ampModDepth, 1);
-	sig = sig * 0.7;
+	sig = sig * 0.5;
 	Out.ar(out, Pan2.ar(sig * env, LFNoise1.kr(0.1)));
 }).add;
 

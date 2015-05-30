@@ -33,6 +33,11 @@ var crushSynth, verbSynth;
 var transp;
 var currDir = thisProcess.nowExecutingPath.dirname;
 
+pitchMod = 0.0293;
+formStrength = 1;
+ampModDepth = 1;
+ampModRate = 100;
+
 // Function to make a go function for a markov chain
 // takes a name of a voice.
 goFunc = {|freq|
@@ -77,28 +82,28 @@ markovArr = 4.collect({arg ind;
 OSCdef.new(
 	\markov3_wobble_depth_resp,
 	{|msg, time, addr, port|
-		formStrength = msg[1];
+		formStrength = ((1 - msg[1]) + 0.3) * (1/1.3);
 	},
 	'/4/fader1'
 );
 OSCdef.new(
 	\markov3_wobble_rate_resp,
 	{|msg, time, addr, port|
-		pitchMod = msg[1] * (1 - (2 ** ((0.5)/12)));
+		pitchMod = 0.001 + (1 - msg[1]) * (1 - (2 ** ((0.5)/12)));
 	},
 	'/4/fader2'
 );
 OSCdef.new(
 	\markov3_amp_depth_resp,
 	{|msg, time, addr, port|
-		ampModDepth = (msg[1] ** 2);
+		ampModDepth = ((1 - msg[1]) ** 2);
 	},
 	'/4/fader3'
 );
 OSCdef.new(
 	\markov3_amp_rate_resp,
 	{|msg, time, addr, port|
-		ampModRate = (msg[1] ** 2) * 100;
+		ampModRate = ((1 - msg[1]) ** 2) * 100;
 	},
 	'/4/fader4'
 );
@@ -113,6 +118,6 @@ fxGrp = Group.after(sourceGrp);
 
 verbSynth = Synth.new(
 	\mc3verb,
-	[in:sourceBus, out:0, mix:0.3, room:0.2],
+	[in:sourceBus, out:0, mix:0.2, room:0.3],
 	fxGrp);
 
